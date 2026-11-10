@@ -42,7 +42,7 @@
   <div class="box">
     <strong>Short version</strong>
     <ul>
-      <li>The assistant talks <strong>only with the studio owner</strong>, on WhatsApp.</li>
+      <li>The assistant talks <strong>only with the studio owner</strong>, on WhatsApp. If anyone else writes to its number, they get one automatic reply that points them to the studio's Instagram.</li>
       <li>It uses the studio's <strong>Clover sales</strong>, <strong>bank transactions</strong> and <strong>payments to artists</strong> to calculate what to pay each artist.</li>
       <li>It <strong>never moves or sends money</strong>.</li>
       <li>We <strong>do not sell</strong> data, use it for ads, or use it to train AI models.</li>
@@ -62,8 +62,9 @@
   <ul>
     <li>The assistant uses the <strong>WhatsApp Business Platform</strong> (provided by Meta) through a separate business phone number.</li>
     <li>It sends messages <strong>only to the studio owner's phone number</strong>, which the studio gives us during setup.</li>
-    <li>It only reads and acts on messages that come <strong>from that number</strong>. Messages from any other number are ignored.</li>
-    <li>It <strong>does not message artists, clients or anyone else</strong>, and it does not read the owner's other chats or contacts.</li>
+    <li>It only reads and acts on messages that come <strong>from that number</strong>.</li>
+    <li>If someone else writes to the assistant's number, they receive <strong>one automatic reply</strong> telling them to contact the studio on Instagram. We do not read or use what they write. We may keep their phone number for up to 24 hours, only so they do not get the same reply more than once a day.</li>
+    <li>Apart from that automatic reply, it <strong>does not message artists, clients or anyone else</strong>, and it does not read the owner's other chats or contacts.</li>
     <li>The owner can stop the WhatsApp messages at any time by telling us (see "Contact us"). The weekly email summary can continue as a backup if the studio wants.</li>
   </ul>
 
@@ -111,7 +112,7 @@
   <p>We share information only with the providers we need to run the service, and only for that purpose:</p>
   <ul>
     <li><strong>Meta (WhatsApp Business Platform)</strong> – to send and receive WhatsApp messages.</li>
-    <li><strong>Twilio</strong> – to connect our system to WhatsApp.</li>
+    <li><strong>Vercel</strong> – hosts the assistant's software that sends and receives the WhatsApp messages.</li>
     <li><strong>Google (Sheets, Gmail, Apps Script)</strong> – to store the studio's records, run the calculations and send the email summary.</li>
     <li><strong>Clover</strong> – the source of the studio's sales data.</li>
     <li><strong>Plaid</strong> – read-only connection to the studio's bank accounts.</li>
