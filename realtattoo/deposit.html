@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Real Tattoo Company · Deposit</title>
+  <style>
+    :root { --tinta: #161616; --suave: #6b6b6b; --linea: #d9d9d9; --fondo: #ffffff; --ok: #0a7a2f; --mal: #b00020; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color: var(--tinta); background: var(--fondo); }
+    main { max-width: 560px; margin: 0 auto; padding: 20px 16px 48px; }
+    .arriba { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .marca { font-weight: 700; letter-spacing: .02em; }
+    .idioma { white-space: nowrap; }
+    .idioma button { font: inherit; font-size: 14px; padding: 6px 12px; border: 1px solid var(--tinta); border-radius: 999px; background: #fff; color: var(--tinta); margin-left: 4px; cursor: pointer; }
+    .idioma button.activo { background: var(--tinta); color: #fff; }
+    h1 { font-size: 26px; margin: 28px 0 6px; }
+    p.intro { color: var(--suave); margin: 0 0 18px; line-height: 1.45; }
+    label { display: block; font-size: 16px; margin: 16px 0 6px; }
+    small { display: block; color: var(--suave); margin-top: -2px; margin-bottom: 6px; font-size: 13px; }
+    input { width: 100%; font: inherit; font-size: 18px; padding: 12px; border: 1px solid var(--linea); border-radius: 10px; background: #fff; color: var(--tinta); }
+    input:focus { outline: 2px solid var(--tinta); border-color: var(--tinta); }
+    .oculto { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    button.enviar { width: 100%; font: inherit; font-size: 19px; font-weight: 600; padding: 15px; margin-top: 26px; border: 0; border-radius: 12px; background: var(--tinta); color: #fff; cursor: pointer; }
+    button.enviar:disabled { opacity: .5; }
+    #estado { margin-top: 16px; font-size: 17px; line-height: 1.45; }
+    .ok { color: var(--ok); font-weight: 600; }
+    .mal { color: var(--mal); }
+    footer { margin-top: 36px; font-size: 13px; color: var(--suave); }
+    footer a { color: var(--suave); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="arriba">
+      <div class="marca">REAL TATTOO COMPANY</div>
+      <div class="idioma">
+        <button type="button" id="b-en" onclick="idioma('en')">English</button>
+        <button type="button" id="b-es" onclick="idioma('es')">Español</button>
+      </div>
+    </div>
+
+    <h1 data-t="titulo"></h1>
+    <p class="intro" data-t="intro"></p>
+
+    <form id="f" autocomplete="on">
+      <label for="cliente" data-t="nombre"></label>
+      <input id="cliente" name="cliente" autocomplete="name" required>
+
+      <label for="telefono" data-t="telefono"></label>
+      <input id="telefono" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required>
+
+      <label for="cita" data-t="cita"></label>
+      <small data-t="citaAyuda"></small>
+      <input id="cita" name="cita" type="datetime-local" required>
+
+      <label for="titular" data-t="titular"></label>
+      <small data-t="titularAyuda"></small>
+      <input id="titular" name="titular" autocomplete="off">
+
+      <div class="oculto" aria-hidden="true"><label for="web">Website</label><input id="web" name="web" tabindex="-1" autocomplete="off"></div>
+
+      <button class="enviar" type="submit" id="boton" data-t="enviar"></button>
+      <div id="estado" role="status"></div>
+    </form>
+
+    <footer><a href="/privacy" data-t="privacidad"></a></footer>
+  </main>
+
+  <script>
+    // Web app de Apps Script que recibe el formulario (la de la COPIA de prueba hasta pasar al sistema real)
+    const URL_SISTEMA = 'https://script.google.com/macros/s/AKfycbwG0469Qh4NDUDh73Ir_NWrK5POnMFE8h9-D3jgx4p6v8D1eijciQ9k6ocF5XCBMUA5/exec';
+
+    const TEXTOS = {
+      en: {
+        titulo: 'Book your deposit', intro: 'Fill this in to hold your appointment. It takes one minute.',
+        nombre: 'Full name', telefono: 'Phone number', cita: 'Appointment date and time',
+        citaAyuda: 'The one you agreed with us in the chat.', titular: 'Name on the Zelle account',
+        titularAyuda: 'Only if someone else is paying for you.', enviar: 'Send', enviando: 'Sending…',
+        ok: "Thank you. We'll send you the studio's Zelle details in the chat.", error: 'It could not be sent. Please try again or message us on Instagram.',
+        telefonoMal: 'Please check the phone number (10 digits).', privacidad: 'Privacy'
+      },
+      es: {
+        titulo: 'Reserva con depósito', intro: 'Rellena esto para reservar tu cita. Es un minuto.',
+        nombre: 'Nombre y apellido', telefono: 'Teléfono', cita: 'Fecha y hora de la cita',
+        citaAyuda: 'La que acordaste con nosotros por el chat.', titular: 'Titular de la cuenta de Zelle',
+        titularAyuda: 'Solo si paga otra persona por ti.', enviar: 'Enviar', enviando: 'Enviando…',
+        ok: 'Gracias. Te enviaremos los datos de Zelle del estudio por el chat.', error: 'No se pudo enviar. Inténtalo otra vez o escríbenos por Instagram.',
+        telefonoMal: 'Revisa el teléfono (10 dígitos).', privacidad: 'Privacidad'
+      }
+    };
+    let lang = 'en';
+    const form = document.getElementById('f');
+
+    function idioma(l) {
+      lang = l;
+      document.documentElement.lang = l;
+      document.querySelectorAll('[data-t]').forEach(function (el) { el.textContent = TEXTOS[l][el.dataset.t]; });
+      document.getElementById('b-en').className = l === 'en' ? 'activo' : '';
+      document.getElementById('b-es').className = l === 'es' ? 'activo' : '';
+    }
+
+    function estado(texto, clase) {
+      const e = document.getElementById('estado');
+      e.textContent = texto;
+      e.className = clase || '';
+    }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      if (form.telefono.value.replace(/\D/g, '').length < 10) { estado(TEXTOS[lang].telefonoMal, 'mal'); return; }
+      const boton = document.getElementById('boton');
+      boton.disabled = true;
+      estado(TEXTOS[lang].enviando);
+      fetch(URL_SISTEMA, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          accion: 'formulario_online', cliente: form.cliente.value.trim(), telefono: form.telefono.value,
+          cita: form.cita.value, titular: form.titular.value.trim(), web: form.web.value, idioma: lang
+        })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j.ok) throw new Error(j.error || 'error');
+          form.style.display = 'none';
+          document.querySelector('p.intro').textContent = TEXTOS[lang].ok;
+          document.querySelector('p.intro').className = 'intro ok';
+        })
+        .catch(function () {
+          boton.disabled = false;
+          estado(TEXTOS[lang].error, 'mal');
+        });
+    });
+
+    idioma('en');
+  </script>
+</body>
+</html>
