@@ -68,8 +68,8 @@
   </main>
 
   <script>
-    // Web app de Apps Script que recibe el formulario (la de la COPIA de prueba hasta pasar al sistema real)
-    const URL_SISTEMA = 'https://script.google.com/macros/s/AKfycbwG0469Qh4NDUDh73Ir_NWrK5POnMFE8h9-D3jgx4p6v8D1eijciQ9k6ocF5XCBMUA5/exec';
+    // Se envía a la función /api/deposito de este mismo sitio, que pasa los datos al sistema del estudio
+    const URL_ENVIO = '/api/deposito';
 
     const TEXTOS = {
       en: {
@@ -112,18 +112,15 @@
       const boton = document.getElementById('boton');
       boton.disabled = true;
       estado(TEXTOS[lang].enviando);
-      fetch(URL_SISTEMA, {
+      fetch(URL_ENVIO, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           accion: 'formulario_online', cliente: form.cliente.value.trim(), telefono: form.telefono.value,
           cita: form.cita.value, titular: form.titular.value.trim(), web: form.web.value, idioma: lang
         })
       })
-        .then(function (r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        })
+        .then(function (r) { return r.json(); })
         .then(function (j) {
           if (!j.ok) throw new Error(j.error || 'error');
           form.style.display = 'none';
