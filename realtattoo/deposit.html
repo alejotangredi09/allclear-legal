@@ -57,7 +57,7 @@
 
       <label for="titular" data-t="titular"></label>
       <small data-t="titularAyuda"></small>
-      <input id="titular" name="titular" autocomplete="off">
+      <input id="titular" name="titular" autocomplete="off" required>
 
       <div class="oculto" aria-hidden="true"><label for="web">Website</label><input id="web" name="web" tabindex="-1" autocomplete="off"></div>
 
@@ -77,7 +77,7 @@
         titulo: 'Book your deposit', intro: 'Fill this in to hold your appointment. It takes one minute.',
         nombre: 'Full name', telefono: 'Phone number', cita: 'Appointment date and time',
         citaAyuda: 'The one you agreed with us in the chat.', titular: 'Name on the Zelle account',
-        titularAyuda: 'Only if someone else is paying for you.', enviar: 'Send', enviando: 'Sending…',
+        titularAyuda: 'Your name, or the person or business that will send the Zelle.', enviar: 'Send', enviando: 'Sending…',
         ok: "Thank you. We'll send you the studio's Zelle details in the chat.", error: 'It could not be sent. Please try again or message us on Instagram.',
         telefonoMal: 'Please check the phone number (10 digits).', privacidad: 'Privacy'
       },
@@ -85,7 +85,7 @@
         titulo: 'Reserva con depósito', intro: 'Rellena esto para reservar tu cita. Es un minuto.',
         nombre: 'Nombre y apellido', telefono: 'Teléfono', cita: 'Fecha y hora de la cita',
         citaAyuda: 'La que acordaste con nosotros por el chat.', titular: 'Titular de la cuenta de Zelle',
-        titularAyuda: 'Solo si paga otra persona por ti.', enviar: 'Enviar', enviando: 'Enviando…',
+        titularAyuda: 'Tu nombre, o el de la persona o empresa que enviará el Zelle.', enviar: 'Enviar', enviando: 'Enviando…',
         ok: 'Gracias. Te enviaremos los datos de Zelle del estudio por el chat.', error: 'No se pudo enviar. Inténtalo otra vez o escríbenos por Instagram.',
         telefonoMal: 'Revisa el teléfono (10 dígitos).', privacidad: 'Privacidad'
       }
@@ -121,16 +121,19 @@
           cita: form.cita.value, titular: form.titular.value.trim(), web: form.web.value, idioma: lang
         })
       })
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
         .then(function (j) {
           if (!j.ok) throw new Error(j.error || 'error');
           form.style.display = 'none';
           document.querySelector('p.intro').textContent = TEXTOS[lang].ok;
           document.querySelector('p.intro').className = 'intro ok';
         })
-        .catch(function () {
+        .catch(function (e) {
           boton.disabled = false;
-          estado(TEXTOS[lang].error, 'mal');
+          estado(TEXTOS[lang].error + ' (' + (e && e.message ? e.message : 'error') + ')', 'mal');
         });
     });
 
